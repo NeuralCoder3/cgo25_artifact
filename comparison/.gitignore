@@ -1,0 +1,7 @@
+build/
+rust_sort/target
+times
+venv
+cmd.txt
+sort_comparison
+refined
