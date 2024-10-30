@@ -1,8 +1,3 @@
-    
-    
-
-
-// #[cfg(any(feature = "n3", not(any(feature = "n4", feature = "n5"))))]
 #[cfg(feature = "n3")] pub const NUMBERS: usize = 3;
 #[cfg(feature = "n3")] pub const MAX_LEN: u8 = 11;
 #[cfg(feature = "n4")] pub const NUMBERS: usize = 4;
@@ -35,9 +30,6 @@ pub struct Permutation(pub [u8; REGS + 2]);
 pub type State = Vec<Permutation>;
 
 use std::ops::{Index, IndexMut, Range};
-// use serde::{Deserialize, Serialize};
-
-
 
 impl Index<usize> for Permutation {
     type Output = u8;
@@ -66,13 +58,6 @@ impl IndexMut<Range<usize>> for Permutation {
         &mut self.0[index]
     }
 }
-
-// serialize, display for state
-// impl std::fmt::Display for Permutation {
-//     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-//         write!(f, "{:?}", &self.0)
-//     }
-// }
 
 pub fn possible_commands() -> Vec<Command> {
     let mut commands = vec![];
@@ -227,102 +212,13 @@ pub fn show_command(cmd: &Command) -> String {
 }
 
 // linked list to store the commands and pointer to last element
-// TODO: https://rust-unofficial.github.io/too-many-lists/
+// https://rust-unofficial.github.io/too-many-lists/
 // https://rust-unofficial.github.io/too-many-lists/second-option.html
-// for how to correctly implement a linked list stack
 #[derive(Clone, Eq, PartialEq, Hash)]
 pub struct Node {
     pub cmd: Command,
     pub prev: Option<Box<Node>>,
 }
-
-// a succinct representation modulo renaming for permutations
-// target for property-aware hashing
-// #[derive(Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
-// struct PermInfo 
-// {
-//     perm: Vec<Vec<u8>>,
-//     flags: Vec<bool>,
-// }
-
-// impl Display for PermInfo {
-//     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-//         write!(f, "{:?} {:?}", &self.perm, &self.flags)
-//     }
-// }
-
-// vector extension (state representation) that allows to bind properties like serialization
-// #[derive(Clone, Eq, PartialEq, Hash, Serialize, Deserialize)]
-// struct PermInfoVec(Vec<PermInfo>);
-// impl std::fmt::Display for PermInfoVec {
-//     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-//         for (i, perm_info) in self.0.iter().enumerate() {
-//             if i != 0 {
-//                 write!(f, ", ")?;
-//             }
-//             write!(f, "[{}]", perm_info)?;
-//         }
-//         Ok(())
-//     }
-// }
-
-// parsing back to PermInfoVec
-// impl From<String> for PermInfoVec {
-//     fn from(s: String) -> Self {
-//         let mut res = vec![];
-//         for part in s.split(",") {
-//             let part = part.trim();
-//             let part = part.trim_start_matches('[');
-//             let part = part.trim_end_matches(']');
-//             let mut iter = part.split_whitespace();
-//             let perm = iter.next().unwrap();
-//             let flags = iter.next().unwrap();
-//             let perm = perm.trim_start_matches('[');
-//             let perm = perm.trim_end_matches(']');
-// let perm = perm.split("|").map(|x| {
-//     x.split(",").map(|y| y.parse::<u8>().unwrap()).collect::<Vec<u8>>()
-// }).collect::<Vec<Vec<u8>>>();
-// let flags = flags
-//     .split(',')
-//     .map(|x| x.parse::<bool>().unwrap())
-//     .collect::<Vec<bool>>();
-//             res.push(PermInfo{perm, flags});
-//         }
-//         PermInfoVec(res)
-//     }
-// }
-
-// coercion between vector and structure
-// impl From<Vec<PermInfo>> for PermInfoVec {
-//     fn from(vec: Vec<PermInfo>) -> Self {
-//         PermInfoVec(vec)
-//     }
-// }
-
-
-
-// permutation -> positions of 1, ..., Number
-// e.g. [0,2,1,1] -> [[2,3],[1],[]]
-// representation modulo renaming
-// fn perm_positions(perm: &permutation) -> perminfo {
-//     let mut pos = vec![vec![]; NUMBERS];
-//     for (i, &n) in perm[0..REGS].iter().enumerate() {
-//         if n > 0 {
-//             pos[(n - 1) as usize].push(i as u8);
-//         }
-//     }
-//     // for (i, &n) in perm.iter().enumerate() {
-//     //     if n > 0 {
-//     //         pos[(n - 1) as usize].push(i as u8);
-//     //     }
-//     // }
-//     // // sort result to get rid of naming association
-
-//     pos.sort();
-//     // let flags = perm[REGS..].iter().map(|&x| x == 1).collect();
-//     let flags = perm[REGS..REGS+2].iter().map(|&x| x == 1).collect();
-//     PermInfo{perm: pos, flags}
-// }
 
 // for each permutation, take out register values, concat => serializable byte array
 // we could use perm_positions for more informed hashing/equality check
@@ -341,13 +237,9 @@ pub fn extract_program(node: &Node) -> Vec<Command> {
     cmds
 }
 
-
-
-
 pub const M_MOV: usize = 0; // movdqa
 pub const M_MIN: usize = 1; // pminud => compare first and second, move smaller to first
 pub const M_MAX: usize = 2;
-
 
 pub fn minmax_possible_commands() -> Vec<Command> {
     let mut commands = vec![];
@@ -360,12 +252,6 @@ pub fn minmax_possible_commands() -> Vec<Command> {
             }
         }
     }
-    // TODO: min and max could be just < (like cmp)
-    // for i in 0..REGS {
-    //     for j in (i + 1)..REGS {
-    //         commands.push((CMP, i, j));
-    //     }
-    // }
     commands
 }
 
@@ -373,10 +259,6 @@ pub fn minmax_possible_commands() -> Vec<Command> {
 pub fn minmax_apply(cmd: &Command, perm: &mut Permutation) {
     let (instr, to, from) = *cmd;
     match instr {
-        // CMP => {
-        //     perm[REGS + 0] = (perm[to] < perm[from]) as u8;
-        //     perm[REGS + 1] = (perm[to] > perm[from]) as u8;
-        // }
         M_MOV => perm[to] = perm[from],
         M_MIN => {
             perm[to] = perm[to].min(perm[from]);

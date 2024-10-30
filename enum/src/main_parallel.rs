@@ -6,14 +6,12 @@ use rayon::iter::ParallelIterator as _;
 pub mod common;
 use common::*;
 
+// based on astar but reordered dijkstra to parallel frontier expansion
+
 fn main() {
     let possible_cmds = possible_commands();
     let permutations: Vec<Vec<u8>> = (1..=NUMBERS_U8).permutations(NUMBERS).collect(); 
     let init_perm_count = permutations.len();
-
-    // let perm_count = 6;
-    // let permutations = permutations.choose_multiple(&mut rand::thread_rng(), perm_count).cloned().collect::<Vec<_>>();
-
 
     // find unused sled-mapX file in a temporary directory (_CONDOR_SCRATCH_DIR or /tmp/ else)
     let tmp_dir = std::env::var("_CONDOR_SCRATCH_DIR").unwrap_or("/tmp".to_string());
@@ -37,8 +35,6 @@ fn main() {
     println!("max_len = {}", MAX_LEN);
     println!("swaps = {}", SWAPS);
 
-
-    // let length_map = sled::open(path).unwrap();
     let mut seen = HashSet::new();
 
     // extend numerical permutations with register for swap and flags
@@ -54,23 +50,12 @@ fn main() {
         })
         .collect();
 
-    // length_map.insert(state_positions(&initial_state), vec![0 as u8]).unwrap();
-
-    // let node0 = Node{cmd: (0,0,0), prev: None};
-
     let mut visited : u64 = 0;
     let mut duplicate : u64 = 0;
-    // let mut cut : u64 = 0;
-
     let mut min_perm_count = [init_perm_count; (MAX_LEN as usize)+1];
-
     let start = std::time::Instant::now();
 
-
-
-
     let mut frontier = vec![initial_state.clone()];
-
     let mut length = 0;
     while length<MAX_LEN {
         print!("Length: {}, ", length);
@@ -92,13 +77,7 @@ fn main() {
         let new_frontier =
             frontier
             .into_par_iter()
-            // .into_iter()
             .flat_map(|state| {
-                // visited.inc();
-                // if visited.get() % 1000 == 0 {
-                //     println!("Visited: {}, Duplicate: {} (length: {})", visited.get(), duplicate.get(), length);
-                // }
-
                 possible_cmds
                     .iter()
                     .filter_map(|cmd| {
@@ -107,14 +86,8 @@ fn main() {
                         if !viable(&new_state) {
                             return None;
                         }
-                        // if seen.lock().unwrap().contains(&new_state) {
-                        //     duplicate.inc();
-                        //     return None;
-                        // }
-                        // seen.lock().unwrap().insert(new_state.clone());
 
                         if seen.contains(&new_state) {
-                        //     duplicate += 1;
                             return None;
                         }
 
@@ -123,7 +96,6 @@ fn main() {
                         {
                             let new_perm_count = new_state.iter().map(|p| &p[0..NUMBERS]).unique().count();
                             if new_perm_count < min_perm_count[length as usize] {
-                                // cut += 1;
                                 return None;
                             }
                         }
@@ -134,7 +106,6 @@ fn main() {
             })
             .collect::<Vec<_>>();
         let new_frontier_length = new_frontier.len();
-        // visited += new_frontier_length;
 
         println!("Filter out duplicates");
         let frontier_filtered = new_frontier
@@ -148,38 +119,22 @@ fn main() {
 
         // add all to seen
         seen.extend(frontier_filtered.iter().cloned());
-        // if solution_lengths.lock().unwrap().len() > 0 {
-        //     println!("Found: {:?} of length: {}", solution_lengths.lock().unwrap(), length);
-        //     break;
-        // }
         length += 1;
         frontier = frontier_filtered;
 
         // check for solutions
         let found = 
             frontier.iter().any(|state| 
-                // state.iter().all(|p| p[0..NUMBERS] == state[0][0..NUMBERS])
                 state.iter().all(|p| p[0..NUMBERS] == (1..=NUMBERS_U8).collect::<Vec<_>>()
             ));
         if found {
             println!("Found: solution of length: {}", length);
             let elapsed = start.elapsed();
             println!("Elapsed: {:?}", elapsed);
-            // solution_lengths.lock().unwrap().push(length);
-            // exit program
             std::process::exit(0);
-            // return vec![state];
         }
     }
-
-
-
-
-
-
     println!();
-
-    // println!("Found {} solutions", solution_count);
 
     println!("Visited: {}, Duplicate: {}", visited, duplicate);
     println!("Elapsed: {:?}", start.elapsed());

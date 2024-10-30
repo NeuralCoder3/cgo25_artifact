@@ -1,14 +1,4 @@
-// .name("apply")
-// .queue(ctx.queue().clone())
-// .global_work_size(frontier.len())
-// .arg(&state_buffer)
-// .arg(&command_buffer)
-// .arg(&output_buffer)
-// .arg(&state_size)
-// .arg(&permutation_size)
-__kernel void apply(__global uchar* data, __global uchar* command, __global uchar* output) {//, int state_size, int permutation_size) {
-    // int state_size = 36;
-    // int permutation_size = 6;
+__kernel void apply(__global uchar* data, __global uchar* command, __global uchar* output) {
     #define CMP 0
     #define MOV 1
     #define CMOVG 2
