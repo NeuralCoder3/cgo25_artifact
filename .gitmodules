@@ -1,0 +1,12 @@
+[submodule "comparison/scripts/uiCA"]
+	path = comparison/scripts/uiCA
+	url = https://github.com/andreas-abel/uiCA.git
+[submodule "comparison/reference/alphadev"]
+	path = comparison/reference/alphadev
+	url = https://github.com/google-deepmind/alphadev.git
+[submodule "comparison/reference/cassioneri"]
+	path = comparison/reference/cassioneri
+	url = https://github.com/cassioneri/sort3.git
+[submodule "comparison/reference/mimicry"]
+	path = comparison/reference/mimicry
+	url = https://github.com/mimicry-ai/sort.git
