@@ -1,0 +1,55 @@
+[package]
+name = "compute_vec"
+version = "0.1.0"
+edition = "2021"
+default-run = "astar"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+compressible-map = "0.3.0"
+diskmap = "0.2.0"
+itertools = "0.12.1"
+ocl = "0.19.7"
+priority-queue = "2.0.2"
+rand = "0.8.5"
+rayon = "1.9.0"
+rusqlite = "0.31.0"
+serde = {version = "1.0.197", features = ["derive"]}
+sled = "0.34.7"
+
+
+[features]
+allsolutions = []
+heuristic1 = []
+heuristic15 = []
+heuristic2 = []
+n3 = []
+n4 = []
+n5 = []
+optimalinstructions = []
+
+[[bin]]
+name = "astar"
+path = "src/main_astar.rs"
+
+
+[[bin]]
+name = "parallel"
+path = "src/main_parallel.rs"
+
+[[bin]]
+name = "gpu"
+path = "src/main_gpu.rs"
+
+[[bin]]
+name = "gpu_struct"
+path = "src/main_gpu_struct.rs"
+
+[[bin]]
+name = "minmax"
+path = "src/main_astar_minmax.rs"
+
+# [[bin]]
+# name = "mixed"
+# path = "src/main_astar_mixed.rs"

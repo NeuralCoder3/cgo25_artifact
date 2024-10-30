@@ -1,0 +1,9 @@
+Cargo.lock
+target
+log.txt
+*test*.*
+*copy*.*
+*.png
+sol*
+venv/
+enumeration-synth
