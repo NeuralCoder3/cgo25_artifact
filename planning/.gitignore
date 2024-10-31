@@ -1,0 +1,5 @@
+cmd.txt
+*.sas
+sas_plan*
+./*_plan.txt
+planning-synth
