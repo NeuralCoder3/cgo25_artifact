@@ -33,7 +33,7 @@ fn main() {
     let git_hash = String::from_utf8(git_hash).unwrap();
     println!("Git hash: {}", git_hash);
     println!("n = {}", NUMBERS);
-    println!("max_len = {}", MAX_LEN);
+    println!("max_len = {}", MAX_LEN_MINMAX);
     println!("swaps = {}", SWAPS);
 
 
@@ -64,7 +64,7 @@ fn main() {
 
     let mut solution_count = 0;
     let solution_dir = std::env::var("SOLUTION_DIR").ok();
-    let subdir = solution_dir.clone().map(|dir| format!("{}/{}_{}", dir, NUMBERS, MAX_LEN));
+    let subdir = solution_dir.clone().map(|dir| format!("{}/{}_{}", dir, NUMBERS, MAX_LEN_MINMAX));
     if let Some(subdir) = &subdir {
         std::fs::create_dir_all(&subdir).unwrap();
         println!("Storing solutions in: {}", subdir);
@@ -123,7 +123,7 @@ fn main() {
         }
 
         // superseeded by check below => already do not insert into queue
-        if length >= MAX_LEN {
+        if length >= MAX_LEN_MINMAX {
             continue;
         }
 
@@ -149,7 +149,7 @@ fn main() {
                 continue;
             }
 
-            if new_length > MAX_LEN {
+            if new_length > MAX_LEN_MINMAX {
                 cut += 1;
                 continue;
             }

@@ -1,19 +1,24 @@
 #[cfg(feature = "n3")] pub const NUMBERS: usize = 3;
 #[cfg(feature = "n3")] pub const MAX_LEN: u8 = 11;
+#[cfg(feature = "n3")] pub const MAX_LEN_MINMAX: u8 = 8;
 #[cfg(feature = "n4")] pub const NUMBERS: usize = 4;
 #[cfg(feature = "n4")] pub const MAX_LEN: u8 = 20; // impossible with 19 => test to prove minimality
+#[cfg(feature = "n4")] pub const MAX_LEN_MINMAX: u8 = 15;
 #[cfg(feature = "n5")] pub const NUMBERS: usize = 5;
 #[cfg(feature = "n5")] pub const MAX_LEN: u8 = 33;
+#[cfg(feature = "n5")] pub const MAX_LEN_MINMAX: u8 = 26; 
+#[cfg(feature = "n6")] pub const NUMBERS: usize = 6;
+#[cfg(feature = "n6")] pub const MAX_LEN_MINMAX: u8 = 40; // not proven to be minimal
 
-#[cfg(not(any(feature = "n3", feature = "n4", feature = "n5")))] pub const NUMBERS: usize = 3;
-#[cfg(not(any(feature = "n3", feature = "n4", feature = "n5")))] pub const MAX_LEN: u8 = 11;
+#[cfg(not(any(feature = "n3", feature = "n4", feature = "n5", feature = "n6")))] pub const NUMBERS: usize = 3;
+#[cfg(not(any(feature = "n3", feature = "n4", feature = "n5", feature = "n6")))] pub const MAX_LEN: u8 = 11;
+#[cfg(not(any(feature = "n3", feature = "n4", feature = "n5", feature = "n6")))] pub const MAX_LEN_MINMAX: u8 = 8;
 
 pub const SWAPS: usize = 1;
 
 // const NUMBERS: usize = 6;
 // const MAX_LEN: u8 = 45;
 // const SWAPS: usize = 2; // increases perm states from 80640 to 1330560
-
 
 
 // https://github.com/google-deepmind/alphadev/blob/main/sort_functions_test.cc
