@@ -190,7 +190,7 @@ fn main() {
             frontier.chunks_exact(state_size)
             .any(|s| {
                 s.chunks_exact(permutation_size)
-                .all(|p| p[0..NUMBERS].iter().all(|&x| x == 1))
+                .all(|p| p[0..NUMBERS] == (1..=NUMBERS_U8).collect::<Vec<_>>())
             });
         if found {
             println!("Found: solution of length: {}", length);

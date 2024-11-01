@@ -37,10 +37,11 @@ python tsne_marked.py
 echo ""
 echo "Running Parallel Dijkstra (around 30s)"
 cargo run --bin parallel --release
-echo "Running GPU search (around )"
-cargo run --bin gpu
-echo "Running GPU2 search (around )"
-cargo run --bin gpu_struct
+# nix-shell -p opencl-headers opencl-info ocl-icd
+echo "Running GPU search (around 3min)"
+cargo run --bin gpu --release
+echo "Running GPU2 search (around 1min)"
+cargo run --bin gpu_struct --release
 
 
 # minmax
