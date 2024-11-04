@@ -1,0 +1,9 @@
+pmaxud %%xmm0, %%xmm3
+pmaxud %%xmm1, %%xmm3
+pminud %%xmm0, %%xmm1
+movdqa %%xmm2, %%xmm0
+pminud %%xmm1, %%xmm0
+pmaxud %%xmm2, %%xmm1
+pmaxud %%xmm3, %%xmm2
+pminud %%xmm1, %%xmm3
+movdqa %%xmm3, %%xmm1
