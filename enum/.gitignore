@@ -7,3 +7,6 @@ log.txt
 sol*
 venv/
 enumeration-synth
+build.sh
+cmd.txt
+count_sols.py
