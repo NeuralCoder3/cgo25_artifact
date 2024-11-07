@@ -24,7 +24,7 @@ uica_output = f"times/uica_output{postfix}"
 #     os.makedirs(outputFolder)
     
 if os.path.exists(asm_folder):
-    shutil.rmtree(asm_folder)
+    shutil.rmtree(asm_folder, ignore_errors=True)
 os.makedirs(asm_folder)
     
 # extract between "# LLVM-MCA-BEGIN {name}" and "# LLVM-MCA-END"

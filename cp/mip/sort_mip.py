@@ -1,7 +1,7 @@
 import itertools
 from sys import stdout
 from mip import Model, xsum, BINARY, INTEGER, CBC, Var, minimize, maximize
-import conflict
+# import conflict
 
 # timestamps = 14
 # timestamps = 12
@@ -432,10 +432,10 @@ def printSol():
 if not m.num_solutions:
     print("We have no solution!")
     
-    cf = conflict.ConflictFinder(m)
-    iis = cf.find_iis(method=conflict.IISFinderAlgorithm.DELETION_FILTER)
-    for c in iis:
-        print(c)
+    # cf = conflict.ConflictFinder(m)
+    # iis = cf.find_iis(method=conflict.IISFinderAlgorithm.DELETION_FILTER)
+    # for c in iis:
+    #     print(c)
     
     exit(1)
 

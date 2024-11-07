@@ -5,3 +5,4 @@ venv
 cmd.txt
 sort_comparison
 refined
+rust_sort/src/rust_sort-stamp/
