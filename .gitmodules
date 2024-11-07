@@ -10,3 +10,13 @@
 [submodule "comparison/reference/mimicry"]
 	path = comparison/reference/mimicry
 	url = ../../mimicry-ai/sort.git
+[submodule "smt/smt2/synth"]
+	path = smt/smt2/synth
+	url = https://github.com/NeuralCoder3/shack-synth-web.git
+	branch = unary
+[submodule "cp/minizinc/chuffed"]
+	path = cp/minizinc/chuffed
+	url = https://github.com/chuffed/chuffed.git
+[submodule "smt/cvc5"]
+	path = smt/cvc5
+	url = https://github.com/cvc5/cvc5.git
