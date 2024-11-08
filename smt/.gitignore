@@ -1,3 +1,5 @@
 smt_link
 smt_synthesis
 sygus_cvc5
+smt2/venv
+results

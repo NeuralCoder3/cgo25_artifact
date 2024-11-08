@@ -20,3 +20,6 @@
 [submodule "smt/cvc5"]
 	path = smt/cvc5
 	url = https://github.com/cvc5/cvc5.git
+[submodule "smt/metalift/metalift"]
+	path = smt/metalift/metalift
+	url = https://github.com/metalift/metalift.git

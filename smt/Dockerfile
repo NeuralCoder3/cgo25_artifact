@@ -8,3 +8,14 @@ RUN ./configure.sh --auto-download && mkdir -p build && cd ./build && make && ma
 WORKDIR /app
 RUN python -m venv venv && . venv/bin/activate && \
     pip install z3-solver numpy
+
+# for metalift
+RUN apt install -y clang llvm apt-utils git wget software-properties-common && \
+    add-apt-repository -y ppa:plt/racket && \
+    apt-get install -y racket
+COPY metalift/metalift /app/metalift
+RUN raco pkg install --auto rosette && \
+    . /app/venv/bin/activate && \
+    pip install pyparsing llvmlite mypy regex && \
+    cd /app/metalift && \
+    pip install -e .
