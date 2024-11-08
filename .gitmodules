@@ -12,14 +12,14 @@
 	url = ../../mimicry-ai/sort.git
 [submodule "smt/smt2/synth"]
 	path = smt/smt2/synth
-	url = https://github.com/NeuralCoder3/shack-synth-web.git
+	url = ../../NeuralCoder3/shack-synth-web.git
 	branch = unary
 [submodule "cp/minizinc/chuffed"]
 	path = cp/minizinc/chuffed
-	url = https://github.com/chuffed/chuffed.git
+	url = ../../chuffed/chuffed.git
 [submodule "smt/cvc5"]
 	path = smt/cvc5
-	url = https://github.com/cvc5/cvc5.git
+	url = ../../cvc5/cvc5.git
 [submodule "smt/metalift/metalift"]
 	path = smt/metalift/metalift
-	url = https://github.com/metalift/metalift.git
+	url = ../../metalift/metalift.git
