@@ -10,5 +10,5 @@ cd $SCRIPT_DIR/minizinc
 cd $SCRIPT_DIR
 
 echo "Running python mip sort synthesis:"
-python mip/sort_mip.py | tee results/mip.txt
+python -u mip/sort_mip.py | tee results/mip.txt
 
