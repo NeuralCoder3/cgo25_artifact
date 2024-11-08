@@ -28,19 +28,9 @@ No method other than our enumerative synthesis can generate sorting kernels for 
 
 Our sorting kernels are faster than the reference implementations.
 
-
-<!--
-## Used Tools
-
-- Z3
-- Metalift
-- Lama Solver
-- Stoke
-- Gurobi
-- 
---> 
-
 ## Availability of the artifact
 
-The CGO artifact is available at Zenodo (TODO:). 
+The CGO artifact is available at Zenodo ([10.5281/zenodo.14055237](https://zenodo.org/records/14055237)). 
 Additionally, the files are available online in [this Github repository](https://github.com/NeuralCoder3/cgo25_artifact).
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14055237.svg)](https://doi.org/10.5281/zenodo.14055237)
