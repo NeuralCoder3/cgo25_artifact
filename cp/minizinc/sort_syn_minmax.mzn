@@ -36,23 +36,12 @@ constraint %% don't operate with yourself
         a[t] != b[t]
     );
 
-% down below already
-% constraint %% only compare with larger registers
-%     forall (t in 1..s) (
-%         cmd[t] = Cmp -> a[t] < b[t]
-%     );
 % min and max can use xmm registers
 constraint %% min, max => xmm registers
     forall (t in 1..s) (
         cmd[t] = Min \/ cmd[t] = Max -> 
         a[t] <= n + swap /\ b[t] <= n + swap
     );
-
-% 42s with normal_reg only
-% constraint 
-%     forall (t in 1..s) (
-%         a[t] <= n+swap /\ b[t] <= n+swap
-%     );
 
 
 %% evolution of state (executing commands)
@@ -88,14 +77,6 @@ constraint %% change values (execute (c)mov)
 
 
 
-%% Goal definition
-% constraint %% same numbers across permutations in last step
-%     forall (r in 1..n) (
-%         forall (k in 1..perm_count) (
-%             state[s,k,r] = state[s,1,r]
-%         )
-%     );
-
 
 constraint
         % sorted in normal register
@@ -106,171 +87,12 @@ constraint
             ) /\
             sum([init_perm[k,r] = 0 | r in 1..n]) = sum([state[s,k,r] = 0 | r in 1..n])
             /\ sum([init_perm[k,r] = 1 | r in 1..n]) = sum([state[s,k,r] = 1 | r in 1..n])
-            % sum([init_perm[k,r] = 1 | r in 1..n]) = sum([state[s,k,r] = 1 | r in 1..n])
             /\ sum([init_perm[k,r] = 2 | r in 1..n]) = sum([state[s,k,r] = 2 | r in 1..n])
             /\ sum([init_perm[k,r] = 3 | r in 1..n]) = sum([state[s,k,r] = 3 | r in 1..n]) 
         )) 
-        % \/
-        % sorted in xmm registers
-    % (forall (k in 1..perm_count) (
-    %         forall (r in (xmm_off+1)..(xmm_off+n-1)) (
-    %             state[s,k,r] <= state[s,k,r+1]
-    %         ) /\
-    %            sum([init_perm[k,r] = 0 | r in 1..n]) = sum([state[s,k,r] = 0 | r in (xmm_off+1)..(xmm_off+n)])
-    %         /\ sum([init_perm[k,r] = 1 | r in 1..n]) = sum([state[s,k,r] = 1 | r in (xmm_off+1)..(xmm_off+n)])
-    %         /\ sum([init_perm[k,r] = 2 | r in 1..n]) = sum([state[s,k,r] = 2 | r in (xmm_off+1)..(xmm_off+n)])
-    %         /\ sum([init_perm[k,r] = 3 | r in 1..n]) = sum([state[s,k,r] = 3 | r in (xmm_off+1)..(xmm_off+n)]) 
-    %     ))
     );
 
 
-
-
-% %% ascending order in last step
-% constraint %% 1..n in last step
-%     forall (k in 1..perm_count) (
-%         forall (r in 1..(n-1)) (
-%             state[s,k,r] <= state[s,k,r+1]
-%         )
-%     );
-
-
-% %% permutation of initial state in last step
-% constraint %% 1..n in last step
-%     forall (k in 1..perm_count) (
-%         sum([init_perm[k,r] = 0 | r in 1..n]) = sum([state[s,k,r] = 0 | r in 1..n])
-%         /\ sum([init_perm[k,r] = 1 | r in 1..n]) = sum([state[s,k,r] = 1 | r in 1..n])
-%         % sum([init_perm[k,r] = 1 | r in 1..n]) = sum([state[s,k,r] = 1 | r in 1..n])
-%         /\ sum([init_perm[k,r] = 2 | r in 1..n]) = sum([state[s,k,r] = 2 | r in 1..n])
-%         /\ sum([init_perm[k,r] = 3 | r in 1..n]) = sum([state[s,k,r] = 3 | r in 1..n]) 
-%         % /\ sum([init_perm[k,r] = 4 | r in 1..n]) = sum([state[s,k,r] = 4 | r in 1..n]) 
-
-%         % forall (r in 1..n) (
-%         %     % count of init[r] is the same as count of state[s,k,r]
-%         %     sum([init_perm[k,r] = state[s,k,i] | i in 1..n]) =
-%         %     sum([init_perm[k,r] = init_perm[k,i] | i in 1..n])
-%         % )
-%     );
-
-%% we could mark these two as redundant constraints
-% constraint %% 1..n in last step
-%     forall (k in 1..perm_count) (
-%         %% different numbers in registers
-%         alldifferent([state[s,k,r] | r in 1..n]) /\
-%         %% all numbers in registers (1..n)
-%         forall (r in 1..n) (
-%             state[s,k,r] >= 1 /\ state[s,k,r] <= n
-%         )
-%     );
-
-%% possible with consistent renaming => 1/6 search space
-% constraint %% 1..n in this order in last step
-%     forall (k in 1..perm_count) (
-%         forall (r in 1..n) (
-%             state[s,k,r] = r
-%         )
-%     );
-
-
-
-%% optimize mov and cmp count
-% solve minimize sum([cmd[t] != Mov /\ cmd[t] != Cmp | t in 1..(s-1)]);
-
-
-
-
-
-%% heuristics (useful but not necessary)
-%% https://www.minizinc.org/doc-2.7.6/en/efficient.html#redundant-constraints
-%% might want to use redundant_constraint()
-
-% cmp 1 2 or mov 4 2 are good starting points
-% constraint cmd[1] = Cmp;
-% constraint cmd[1] = Cmp /\ a[1] = 1 /\ b[1] = 2;
-
-
-% reads decremental order
-% constraint 
-%     forall (t in 1..(s-1)) (
-%         % first read 3 before read 2
-%         b[t] = 2 -> exists (t2 in 1..t-1) (
-%             b[t2] = 3
-%         ) /\ 
-%         % first read 2 before read 1
-%         b[t] = 1 -> exists (t2 in 1..t-1) (
-%             b[t2] = 2
-%         ) 
-%         % first read 3 before read 4
-%         %
-%         % b[t] = 4 -> exists (t2 in 1..t-1) (
-%         %     b[t2] = 3
-%         % ) 
-%         % b[t] = 4 -> exists (t2 in 1..t-1) (
-%         %     a[t2] = 4
-%         % )
-%     );
-
-% do not read if content is zero
-% constraint 
-%     forall (t in 1..(s-1), k in 1..perm_count) (
-%         state[t,k,b[t]] != 0
-%     );
-
-
-%% in each step, each number at least once
-% constraint 
-%     forall (k in 1..perm_count, t in 1..s) (
-%            sum([state[t,k,r] = 1 | r in 1..reg]) >= 1
-%         /\ sum([state[t,k,r] = 2 | r in 1..reg]) >= 1
-%         /\ sum([state[t,k,r] = 3 | r in 1..reg]) >= 1
-%     );
-% constraint 
-%     forall (k in 1..perm_count) (
-%            sum([state[5,k,r] = 1 | r in 1..reg]) >= 1
-%         /\ sum([state[5,k,r] = 2 | r in 1..reg]) >= 1
-%         /\ sum([state[5,k,r] = 3 | r in 1..reg]) >= 1
-%     );
-% constraint 
-%     forall (k in 1..perm_count, t in 1..s) (
-%            exists([state[t,k,r] = 1 | r in 1..reg])
-%         /\ exists([state[t,k,r] = 2 | r in 1..reg])
-%         /\ exists([state[t,k,r] = 3 | r in 1..reg])
-%     );
-
-% Test Examples 
-% constraint 
-%     state[s,1,1] = 0;
-
-% constraint 
-%     cmd[1] = Cmp /\
-%     a[1] = 1 /\
-%     b[1] = 2;
-% constraint 
-%     cmd[2] = CMovL /\
-%     a[1] = 1 /\
-%     b[1] = 2;
-% constraint 
-%     cmd[2] = Mov /\
-%     a[1] = 4 /\
-%     b[1] = 2;
-
-% constraint
-%     %% set all flags
-%     forall (t in 1..s, k in 1..perm_count) (
-%         flags[t,k,1] = true /\ flags[t,k,2] = true
-%     );
-
-
-%% how to print
-
-%% print each state as 
-%% "Step: t"
-%% "state[t,1,1] state[t,1,2] ... state[t,1,n]"
-%% "state[t,2,1] state[t,2,2] ... state[t,2,n]"
-%% ...
-% output ["Step: \(t)\n" ++ "" | t in 1..s]
-        % ["\(state[t,k,r]) " | r in 1..n] ++
-        % ["\n" | k in 1..perm_count] | t in 1..s];
 
 output ["Step: \(t)\n" ++ 
     concat([

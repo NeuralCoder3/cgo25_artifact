@@ -29,10 +29,6 @@ for i in range(steps):
     state[i] = {}
     flags[i] = {}
     for k in range(perm_count):
-        # state[i][k] = {}
-        # for r in range(reg):
-        #     state[i][k][r] = Int('state'+str(i)+'_'+str(k)+'_'+str(r))
-        #     s.add(And(state[i][k][r] >= 0, state[i][k][r] <= n))
         state[i][k] = Array('state'+str(i)+'_'+str(k), IntSort(), IntSort())
         # this constraint reduces 30min to 15min
         for r in range(reg):
@@ -137,20 +133,6 @@ for t in range(steps):
         s.add(Or(cmd[t] != Cmp, cmd[t+1] != Cmp))
     
     
-# tests
-    
-# s.add(cmd[0] == Cmp)
-# s.add(a[0] == 0)
-# s.add(b[0] == 1)
-
-# s.add(cmd[1] == CMovL)
-# s.add(a[1] == 0)
-# s.add(b[1] == 1)
-
-# s.add(cmd[2] == Mov)
-# s.add(a[2] == 3)
-# s.add(b[2] == 1)
-
 # write smt2 file
 with open("sort_3_generated.smt2", "w") as f:
     f.write(s.to_smt2())
@@ -163,10 +145,8 @@ if res == sat:
         commands.append((m[cmd[i]], m[a[i]], m[b[i]]))
     for i in range(steps):
         for k in range(perm_count):
-            # print([m[state[i][k][r]] for r in range(reg)])
             values = [m.evaluate(state[i][k][r]) for r in range(reg)]
             flag_values = [m.evaluate(flags[i][k][f]) for f in range(2)]
-            # print([m[flags[i][k][f]] for f in range(2)])
             print(" ".join([str(v) for v in values]), 
                   ("<" if flag_values[0] else " ") +
                   (">" if flag_values[1] else " "))

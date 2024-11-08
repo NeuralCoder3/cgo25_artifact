@@ -10,15 +10,11 @@ n = 3
 
 s = Solver()
 
-# TODO: execute symbolic test case on all previous programs
-
-# TODO: in theory no test case could repeat (or even be the same kind/path)
+# no test case could repeat (or even be the same kind/path)
 # that is because the forward query finds a program that works on all tests (sat query, guaranteed)
 # the backward query finds a test that is failed for this program (sat query, counterexample)
 
 # we synthesize a full path-complete coverage (enumerate the logarithmic type for a dependent computation type)
-
-# TODO: think about how/why no path is repeated
 
 Inst, (Cmp,Mov,CMovG,CMovL) = EnumSort('Inst', ["cmp","mov", "cmovg", "cmovl"])
 
@@ -57,7 +53,6 @@ while True:
     s.pop()
     # s.push()
     
-    # init_perm = list(itertools.permutations(range(1, n+1)))
     perm_count = len(init_perm)
     
     print("Run with test suite:")
@@ -71,9 +66,6 @@ while True:
         for k in range(last_perm, perm_count):
             # array to handle access by register
             state[i][k] = Array('state'+str(i)+'_'+str(k), IntSort(), IntSort())
-            # artificial for sort
-            # for r in range(reg):
-            #     s.add(And(state[i][k][r] >= 0, state[i][k][r] <= n))
             flags[i][k] = {}
             for f in range(2):
                 flags[i][k][f] = Bool('flags'+str(i)+'_'+str(k)+'_'+str(f))
@@ -172,17 +164,6 @@ while True:
         commands = []
         for i in range(steps):
             commands.append((m[cmd[i]], m[a[i]], m[b[i]]))
-        # for i in range(steps):
-        #     for k in range(perm_count):
-        #         values = [m.evaluate(state[i][k][r]) for r in range(reg)]
-        #         flag_values = [m.evaluate(flags[i][k][f]) for f in range(2)]
-        #         print(" ".join([str(v) for v in values]), 
-        #             ("<" if flag_values[0] else " ") +
-        #             (">" if flag_values[1] else " "))
-        #     if i != steps-1:
-        #         print(" ".join(str(s) for s in commands[i]))
-        #     print()
-        # print()
         print("Intermediate program:")
         for i in range(steps-1):
             print(" ".join(str(s) for s in commands[i]))
@@ -203,14 +184,6 @@ while True:
             iflag[t] = {}
             for f in range(2):
                 iflag[t][f] = Bool('iflag'+str(t)+'_'+str(f))
-                
-        # artificial for sort
-        # for r in range(n):
-        #     isol.add(And(istate[0][r] >= 1, istate[0][r] <= n))
-        #     for r2 in range(n):
-        #         if r != r2:
-        #             isol.add(istate[0][r] != istate[0][r2])
-            
 
         # initial state
         for r in range(n, reg):
@@ -285,17 +258,6 @@ while True:
             print("The program is correct.")
             break
             
-        # inputs = []
-        # for i in range(n):
-        #     inputs.append(Int('input'+str(i)))
-        #     isol.add(And(inputs[i] >= 0, inputs[i] <= n))
-        
-        # assume that we use this program
-        # for i in range(steps):
-        #     s.add(And(cmd[i] == commands[i][0], a[i] == commands[i][1], b[i] == commands[i][2]))
-        
-        # is there a test case that fails?
-        
     else:
         print("The specification is unsatisfiable.")
         break

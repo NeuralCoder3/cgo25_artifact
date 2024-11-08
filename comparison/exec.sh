@@ -21,7 +21,6 @@ llvm-mca -mcpu=skylake -march= build/clang.release.make/bench_s.s > times/bench_
 python scripts/llvm_mca_extract.py times/bench_llvm_mca_skylake.txt refined/bench_llvm_mca_skylake.txt
 
 # UICA
-# needs python with plotly
 SCRIPT_DIR="$(realpath $(dirname $0))"
 cd $SCRIPT_DIR/scripts/
 git clone https://github.com/andreas-abel/uiCA.git uiCA2

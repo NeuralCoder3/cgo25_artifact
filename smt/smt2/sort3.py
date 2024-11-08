@@ -39,7 +39,6 @@ class Sort:
         self.regs = regs
         self.swap = swap
         self.total_regs = regs+swap
-        # TODO: limit bitwidth, length
         self.ty    = z3.ArraySort(IntSort(),IntSort())
         # r1, r2, r3, s1, fl, fg
         # register 1..width
@@ -179,12 +178,8 @@ def validate():
     
     # or use spec.instantiate(outs, inputs) with intermediate variables
     y = x
-    # y = specialize(sort.swap_0_1.func, y)
-    # y = specialize(sort.swap_1_2.func, y)
-    # y = specialize(sort.swap_0_1.func, y)
     
     # swap a b = cmp a b; cmovg 3 a; cmovg a b; cmovg b 3
-    # TODO: maps would make this nicer
     # 0 1
     y = specialize(sort.cmp_0_1.func, y)
     y = specialize(sort.cmovg_3_0.func, y)

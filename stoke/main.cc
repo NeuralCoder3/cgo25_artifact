@@ -80,17 +80,11 @@ extern "C" void sort3_manual(int* buffer) {
       // swap if greater 0 (eax) > 1 (ecx)
       // via conditional move
       "cmp %%eax, %%ecx              \n"
-      // "cmovg %%esi, %%ecx            \n"
-      // "cmovg %%ecx, %%eax            \n"
-      // "cmovg %%eax, %%esi            \n"
       "cmovg %%ecx, %%esi            \n"
       "cmovg %%eax, %%ecx            \n"
       "cmovg %%esi, %%eax            \n"
       // swap if greater 1 (ecx) > 2 (edx)
       "cmp %%ecx, %%edx              \n"
-      // "cmovg %%esi, %%edx            \n"
-      // "cmovg %%edx, %%ecx            \n"
-      // "cmovg %%ecx, %%esi            \n"
       "cmovg %%edx, %%esi            \n"
       "cmovg %%ecx, %%edx            \n"
       "cmovg %%esi, %%ecx            \n"

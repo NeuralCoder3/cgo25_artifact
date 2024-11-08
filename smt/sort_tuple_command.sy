@@ -1,15 +1,6 @@
-; ( set-logic LIA )
-; ( set-logic ALL_SUPPORTED )
 ( set-logic ALL )
 
-
-; (declare-datatype Pair (mkPair (X Y) ((pair (first X) (second Y)))))
-; (declare-datatypes () ((Pair (mk-pair (first Int) (second Int)))))
 ; http://cvc4.cs.stanford.edu/wiki/Datatypes
-; (declare-datatype ((pair 2))
-;     ((par (T) (mkPair (first T) (second T))))
-; )
-
 ; https://github.com/cvc5/cvc5/blob/main/examples/api/smtlib/relations.smt2
 
 ; function from T to T with T = [0..3]^4 * bool * bool
@@ -40,9 +31,6 @@
     (Triple (Array Int Int) Bool Bool)
     ; (arr,lt,gt) = tup
     (let (
-            ; (i ((_ tuple.select 0) cmd))
-            ; (i cmd.0)
-            ; (i (_arg_1 (Tuple Instruction Int Int)))
             (i (first cmd))
             (reg1 (second cmd))
             (reg2 (third cmd))
@@ -90,10 +78,6 @@
         (Start (Triple Instruction Int Int)
             (
                 ; Command
-                ; (ite (= i 3) Command Start)
-                ; (ite (= i 2) Command Start)
-                ; (ite (= i 1) Command Start)
-                ; (ite (= i 0) Command Start)
                 (ite (= i 0) Command 
                 (ite (= i 1) Command 
                 (ite (= i 2) Command 
@@ -126,8 +110,6 @@
         (tup (Triple (Array Int Int) Bool Bool))
     )
     (Triple (Array Int Int) Bool Bool)
-    ; (apply f_enum tup)
-    ; (apply (f_enum 0) tup)
     (apply (f_enum 10) 
     (apply (f_enum  9) 
     (apply (f_enum  8) 
@@ -142,25 +124,6 @@
     tup
     )))))))))))
 )
-
-; ( synth-fun f 
-;     ((tup (Tuple (Array Int Int) Bool Bool)) )
-;     (Tuple (Array Int Int) Bool Bool)
-;     ( (Start (Tuple (Array Int Int) Bool Bool)) )
-;     (
-;         (Start (Tuple (Array Int Int) Bool Bool)
-;             (
-;                 (tuple arr lt gt)
-;                 (tuple (store arr 1 1) false false)
-;                 (tuple (store arr 2 2) false false)
-;                 (tuple (store arr 3 3) false false)
-;             )
-;             ; (tuple (store arr 1 1) false false)
-;             ; (tuple (store arr 2 2) false false)
-;             ; (tuple (store arr 3 3) false false)
-;         )
-;     )
-; )
 
 (declare-var x Int)
 (declare-var y Int)
@@ -193,43 +156,12 @@
             )
         )
         (and
-            ; ; in 1 ... 3
-            ; (>= (select out_array 1) 1)
-            ; (<= (select out_array 1) 3)
-            ; (>= (select out_array 2) 1)
-            ; (<= (select out_array 2) 3)
-            ; (>= (select out_array 3) 1)
-            ; (<= (select out_array 3) 3)
-            ; ; distinct
-            ; (distinct (select out_array 1) (select out_array 2))
-            ; (distinct (select out_array 1) (select out_array 3))
-            ; (distinct (select out_array 2) (select out_array 3))
-            ; ; ascending
-            ; (<= (select out_array 1) (select out_array 2))
-            ; (<= (select out_array 2) (select out_array 3))
-            ; alternative => just 123
-            ; (= (select out_array 0) 0)
             (= (select out_array 0) 1)
             (= (select out_array 1) 2)
             (= (select out_array 2) 3)
-            ; (= (select out_array 1) 1)
-                ; (define-fun f_enum ((i Int)) (Triple Instruction Int Int) (ite (= i 0) (triple cmp 0 2) (ite (= i 1) (triple cmovg 0 2) (ite (= i 2) (triple cmp 1 0) (ite (= i 3) (triple cmovg 1 0) (triple cmovg 1 2))))))
-                ; triple cmp 0 2
-                ; triple cmovg 0 2
-                ; triple cmp 1 0
-                ; triple cmovg 1 0
-            ; (= (select out_array 2) 2)
-            ; (= (select out_array 3) 3)
         )
     )
 )
 
 
 ( check-synth )
-; call with cvc5 --lang=sygus2 <file>
-; cvc5 --lang help
-
-
-; (
-; (define-fun f_enum ((i Int)) (Triple Instruction Int Int) (ite (= i 0) (triple cmp 3 3) (ite (= i 1) (triple cmovl 0 3) (ite (= i 2) (triple mov 3 1) (ite (= i 3) (triple cmp 3 0) (ite (= i 4) (triple cmovg 1 3) (ite (= i 5) (triple cmovl 1 1) (ite (= i 6) (triple cmovl 0 1) (ite (= i 7) (triple cmovg 1 0) (ite (= i 8) (triple cmp 2 0) (ite (= i 9) (triple cmovl 1 2) (triple cmp 0 2))))))))))))
-; )

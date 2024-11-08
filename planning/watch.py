@@ -48,8 +48,6 @@ for file in os.listdir("."):
         os.remove(file)
 
 start = time.time()
-# proc = subprocess.Popen(cmd, shell=True)
-# void the output
 proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 while not cond():
     if time.time() - start > timeout:

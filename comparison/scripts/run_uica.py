@@ -20,9 +20,6 @@ uicaPath = "./scripts/uiCA/uiCA.py"
 tmp_folder = "times/tmp"
 uica_output = f"times/uica_output{postfix}"
     
-# if not os.path.exists(outputFolder):
-#     os.makedirs(outputFolder)
-    
 if os.path.exists(asm_folder):
     shutil.rmtree(asm_folder, ignore_errors=True)
 os.makedirs(asm_folder)

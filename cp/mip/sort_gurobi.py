@@ -5,21 +5,6 @@ from gurobipy import GRB
 
 import itertools
 
-
-# Improvements:
-# SOS1 for commands (only 1 is non-zero)
-# quadratic -> linear
-#   flag
-#   acmov[gl]
-#   new value
-# Heuristcs:
-#  initial cmp (cmov without flag useless)
-#  no cmp after cmp
-#  
-
-
-
-
 timestamps = 14
 # timestamps = 12
 # timestamps = 11 # no sol found for 123
@@ -33,9 +18,6 @@ permutations = list(itertools.permutations(range(1,number_registers+1)))
 permutation_count = len(permutations)
 
 m = gp.Model("sort")
-# m.setParam('PRESOLVE', 0)
-# m.setParam(GRB.Param.SolutionNumber, sol)
-# m.Params.LogToConsole = 0
 
 v = {}
 is_gt = {}
@@ -96,14 +78,6 @@ for i in range(timestamps):
                 c_acmovl[i][k][a][b] = m.addVar(name="c_acmovl[%d][%d][%d][%d]" % (i,k,a,b), vtype=GRB.BINARY)
             if a < b:
                 c_cmp[i][a][b] = m.addVar(name="c_cmp[%d][%d][%d]" % (i,a,b), vtype=GRB.BINARY)
-                
-# unnecessary helper constraints
-# for i in range(timestamps):
-#     for k in range(permutation_count):
-#         for a in range(total_registers):
-#             m.addConstr(v[i][k][a] >= 0, name="v_nonneg[%d][%d][%d]" % (i,k,a))
-#             m.addConstr(v[i][k][a] <= number_registers, name="v_ub[%d][%d][%d]" % (i,k,a))
-            
             
 # initialize variables
 for k in range(permutation_count):
@@ -129,8 +103,6 @@ for i in range(timestamps):
                     c_gt = is_gt[i][k][a][b]
                     c_lt = is_lt[i][k][a][b]
                     name = "is_cmp[%d][%d][%d][%d]" % (i,k,a,b)
-                    # TODO: use less constraints
-                    # TODO: maybe use max/ub instead of M
                     m.addLConstr(va - vb >= 1-M*(1-c_gt), name=name+"_cg1")
                     m.addLConstr(vb - va >= 1-M*(1-c_lt), name=name+"_cl1")
                     m.addLConstr(c_lt + c_gt <= 1, name=name+"_c")
@@ -161,12 +133,6 @@ for i in range(timestamps-1):
         for b in c_cmovl[i][a]:
             cmovls.append(c_cmovl[i][a][b])
             all_commands += c_cmovl[i][a][b]
-    # print("cmp: ",len(cmps))
-    # all_commands = \
-    #     c_noop[i] + \
-    #     sum(cmps) + \
-    #     sum(cmovgs) + \
-    #     sum(cmovls)
     m.addConstr(all_commands == 1, name="one_command[%d]" % i)
     
     # no_cmp = 1 - sum(cmps)
@@ -215,11 +181,6 @@ for i in range(timestamps-1):
     
 # commands in final step are ignored
         
-# debug testing
-# m.addConstr(c_cmp[0][0][1] == 1)
-# m.addConstr(c_cmovg[1][0][1] == 1)
-# m.addConstr(c_cmovl[1][1][2] == 1)
-
 
 # goal
 # all sorted i => i
@@ -230,56 +191,20 @@ for k in range(permutation_count):
 # same across all permutations
 for a in range(number_registers):
     for k in range(permutation_count-1):
-        # m.addConstr(v[timestamps-1][k][a] == v[timestamps-1][k+1][a])
         for k2 in range(permutation_count):
             m.addConstr(v[timestamps-1][k][a] == v[timestamps-1][k2][a], name="v_same_reg[%d][%d][%d]" % (k,k2,a))
             
 for k in range(permutation_count):
     for a in range(number_registers):
-        # m.addConstr(v[timestamps-1][k][a] != 0)
-        # m.addConstr(v[timestamps-1][k][a] > 0)
         m.addConstr(v[timestamps-1][k][a] >= 1, name="v_value_bound[%d][%d]" % (k,a))
         for b in range(number_registers):
             if a < b:
                 m.addConstr(is_gt[timestamps-1][k][a][b] + is_lt[timestamps-1][k][a][b] == 1, name="v_diff_perm[%d][%d][%d]" % (k,a,b))
-            # if a != b:
-                # m.addConstr(v[timestamps-1][k][a] != v[timestamps-1][k][b])
-                # pass
-
 
 
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-# noops = 0
-# for i in range(timestamps):
-#     noops += c_noop[i]
-# for i in range(timestamps):
-#     m.addConstr(c_noop[i]==0, name="no_noop[%d]" % i)
-
-# m.setObjective(noops, GRB.MAXIMIZE)
-        
-# m.Params.LogToConsole = 0
 m.write("sort_raw.lp")
 m.optimize()
-# m.write("sort_opt.lp")
 
 print("Found %d solutions" % m.SolCount)
 if m.SolCount == 0:
@@ -289,17 +214,6 @@ constraint_violation = m.getAttr(GRB.Attr.ConstrVio)
 print("Constraint violation: %f" % constraint_violation)
 if constraint_violation > 0.1:
     pass
-    # exit(1)
-    # list all violated constraints
-    # for c in m.getConstrs():
-    #     if (c.slack)>=0.1:
-    #         print(c.constrName)
-    #         print(c.slack)
-    #         print(c.RHS)
-        # print(dir(c))
-        # 'CBasis', 'CDualNorm', 'CTag', 'ConstrName', 'DStart', 'FarkasDual', 'IISConstr', 'IISConstrForce', 'Lazy', 'Pi', 'RHS', 'SARHSLow', 'SARHSUp', 'ScenNRHS', 'Sense', 'Slack',
-        # if c.violation > 0.1:
-        #     print(c.constrName, c.violation)
 
 commands = []
 for i in range(timestamps):
@@ -308,9 +222,6 @@ for i in range(timestamps):
         registers = v[i][k].items()
         registers = sorted(registers, key=lambda x: x[0])
         flag_str = ("<" if flt[i][k].X else "") + (">" if fgt[i][k].X else "")
-        # print(", ".join(str(int(v.X)) for _,v in registers), flag_str)
-        # print("  r0 < r1: %d" % is_lt[i][k][0][1].X)
-        # print("  r0 > r1: %d" % is_gt[i][k][0][1].X)
         for a in range(total_registers):
             r_v = registers[a][1]
             cmp_str = ""
@@ -321,29 +232,24 @@ for i in range(timestamps):
                 if not r_is_lt and not r_is_gt:
                     cmp_str = "="
                 cmp_str = " " + cmp_str + " "
-                # cmp_str = ", "
             print(str(int(r_v.x)), end=cmp_str)
         print("  " + flag_str)
 
     command = ""
     if c_noop[i].X >= 0.5:
         command+="noop"
-        # print(c_noop[i].X)
     for a in c_cmp[i]:
         for b in c_cmp[i][a]:
             if c_cmp[i][a][b].X >= 0.5:
                 command+="cmp r%d r%d" % (a,b)
-                # print(c_cmp[i][a][b].X)
     for a in c_cmovg[i]:    
         for b in c_cmovg[i][a]:
             if c_cmovg[i][a][b].X >= 0.5:
                 command+="cmovg r%d r%d" % (a,b)
-                # print(c_cmovg[i][a][b].X)
     for a in c_cmovl[i]:
         for b in c_cmovl[i][a]:
             if c_cmovl[i][a][b].X >= 0.5:
                 command+="cmovl r%d r%d" % (a,b)
-                # print(c_cmovl[i][a][b].X)
 
     print("Execute command: %s" % command)
     commands.append(command)
@@ -360,13 +266,10 @@ def val(x):
         return str(num_val)
 
 with open("sort_log.txt", "w") as f:
-    # print("All variables:")
-    # m.cbGetSolution(m.getVars())
     for var in m.getVars():
         print(var.varName, val(var), var.x, file=f)
         
 with open("sort_log_ordered.txt", "w") as f:
-    # val = lambda x: str(int(x.x+0.5))
     for i in range(timestamps):
         print("Timestamp %s" % i, file=f)
         print("  Commands", file=f)
@@ -399,7 +302,6 @@ with open("sort_log_ordered.txt", "w") as f:
             registers = sorted(registers, key=lambda x: x[0])
             flag_str = ("<" if flt[i][k].X else "") + (">" if fgt[i][k].X else "")
             flag_str = "[" + flag_str + "]"
-            # print("    %s" % ", ".join(val(v) for _,v in registers), file=f)
             print("    ", end="", file=f)
             for a in range(total_registers):
                 r_v = registers[a][1]
@@ -411,7 +313,6 @@ with open("sort_log_ordered.txt", "w") as f:
                     if not r_is_lt and not r_is_gt:
                         cmp_str = "="
                     cmp_str = " " + cmp_str + " "
-                    # cmp_str = ", "
                 print(val(r_v), end=cmp_str, file=f)
             print("  " + flag_str, file=f)
         

@@ -37,7 +37,6 @@ def couple(i2, b, i1):
         i1 (Var): An integer variable
     """
     global m, M
-    # TODO: maybe simplify if i1 is binary
     # maybe name constraints
     m += (i2 <= i1)
     m += (i2 >= i1-(1-b)*M)
@@ -171,63 +170,11 @@ for i in range(timestamps):
                 
                 couple(v_aval_m[i][k][a][b], c_mov[i][a][b], v[i][k][b])
                 
-                
-                
-
-# debug
-# for t in range(timestamps-1):
-#     for k in range(permutation_count):
-#         permutation = permutations[k]
-#         for a in range(number_registers):
-#             m += (v[t][k][a] == permutation[a]), "v_init[%d][%d]" % (k,a)
-# m += (c_cmp[0][0][1] == 1), "c_cmp_init"
-# m += (c_cmovg[1][2][1] == 1), "c_cmovg_init"
-
-# if True:
-#     A = 0
-#     B = 1
-#     C = 2
-#     S = 3
-#     def swap(i, X, Y):
-#         global m
-#         m += c_cmp[i][X][Y] == 1
-#         m += c_cmovg[i+1][S][X] == 1
-#         m += c_cmovg[i+2][X][Y] == 1
-#         m += c_cmovg[i+3][Y][S] == 1
-#     swap(0, A, B)
-#     swap(4, B, C)
-#     swap(8, A, B)
-
 if True:
     X = 0
     Y = 1
     Z = 2
     S = 3
-    
-    # ("mov"  , S, Y),
-    # ("cmp"  , Z, Y), 
-    # ("cmovl", S, Z),
-    # ("cmovg", Y, Z),
-    # m +=   c_mov[0][S][Y] == 1
-    # m +=   c_cmp[1][Y][Z] == 1
-    # m += c_cmovg[2][S][Z] == 1
-    # m += c_cmovl[3][Y][Z] == 1
-    
-    # ("mov"  , Z, X),
-    # ("cmp"  , Y, X), 
-    # ("cmovl", Z, Y),
-    # ("cmovl", Y, X),
-    # m +=   c_mov[4][Z][X] == 1
-    # m +=   c_cmp[5][X][Y] == 1
-    # m += c_cmovg[6][Z][Y] == 1
-    # m += c_cmovg[7][Y][X] == 1
-    
-    # ("cmp"  , S, Z),
-    # ("cmovl", X, S),
-    # ("cmovg", Z, S), 
-    # m +=   c_cmp[8][Z][S] == 1
-    # m += c_cmovg[9][X][S] == 1
-    # m += c_cmovl[10][Z][S] == 1
 
 
 # init values
@@ -244,7 +191,6 @@ for k in range(permutation_count):
 # evolution of system (execute commands)
 for i in range(timestamps):
     # execute one command
-    # TODO: check that list comprehension works as intended
     cmps = xsum([c_cmp[i][a][b] for a in c_cmp[i] for b in c_cmp[i][a]])
     movs = xsum([c_mov[i][a][b] for a in c_mov[i] for b in c_mov[i][a]])
     cmovgs = xsum([c_cmovg[i][a][b] for a in c_cmovg[i] for b in c_cmovg[i][a]])
@@ -258,13 +204,11 @@ for i in range(timestamps):
     m += (all_commands == 1), "all_commands[%d]" % i
 
     no_cmp = 1-cmps
-    # TODO: maybe we can use the coupling directly
     no_cmp_var = m.add_var(name="no_cmp_var[%d]" % i, var_type=BINARY)
     m += (no_cmp_var == no_cmp), "no_cmp_var_def[%d]" % i
     
     # execute flags
     # update flags if comparison was executed
-    # TODO: maybe couple above (at location of acmov)
     for k in range(permutation_count):
         act_prev_fgt = m.add_var(name="act_prev_fgt[%d][%d]" % (i,k), var_type=BINARY)
         act_prev_flt = m.add_var(name="act_prev_flt[%d][%d]" % (i,k), var_type=BINARY)
@@ -286,8 +230,6 @@ for i in range(timestamps):
     # execute moves
     for k in range(permutation_count):
         for a in range(total_registers):
-            # m += (v[i+1][k][a] == v[i][k][a]), "v_evo[%d][%d][%d]" % (i,k,a)
-    #         # no successfull mov with dest register a
             stay_same = 1-\
                 xsum([c_acmovg[i][k][a][b] for b in c_cmovg[i][a]]) -\
                 xsum([c_acmovl[i][k][a][b] for b in c_cmovl[i][a]]) -\
@@ -303,38 +245,20 @@ for i in range(timestamps):
                 xsum([v_aval_m[i][k][a][b] for b in c_mov[i][a]])
             m += (v[i+1][k][a] == v_new_val), "v_evo[%d][%d][%d]" % (i,k,a)
 
-# no command at last timestamp
-# t = timestamps-1
-# cmps = xsum([c_cmp[t][a][b] for a in c_cmp[t] for b in c_cmp[t][a]])
-# cmovgs = xsum([c_cmovg[t][a][b] for a in c_cmovg[t] for b in c_cmovg[t][a]])
-# cmovls = xsum([c_cmovl[t][a][b] for a in c_cmovl[t] for b in c_cmovl[t][a]])
-# movs = xsum([c_mov[t][a][b] for a in c_mov[t] for b in c_mov[t][a]])
-# all_commands = cmps + movs + cmovgs + cmovls
-# m += (all_commands == 0), "all_commands[%d]" % t
-
-
 # goal
-
-# all sorted i => i
-# for k in range(permutation_count):
-#     for a in range(number_registers):
-#         m += (v[timestamps-1][k][a] == a+1), "v_goal[%d][%d]" % (k,a)
 
 # same across all permutations
 for a in range(number_registers):
     for k in range(permutation_count):
         for k2 in range(permutation_count):
-            # k == k2 holds theoretically but the IP has problems with it
             if k != k2:
                 m += (v[timestamps-1][k][a] == v[timestamps-1][k2][a]), "v_goal_same_register[%d][%d][%d]" % (k,k2,a)
-                # print(f"Add constraint v[{timestamps-1}][{k}][{a}] == v[{timestamps-1}][{k2}][{a}]")
             
 # different between registers
 for k in range(permutation_count):
     for a in range(number_registers):
         for b in range(number_registers):
             if a < b:
-                # m += (v[timestamps-1][k][a] != v[timestamps-1][k][b]), "v_goal_different_registers[%d][%d][%d]" % (k,a,b)
                 m += (is_gt[timestamps-1][k][a][b] + is_lt[timestamps-1][k][a][b] == 1), "v_goal_diff_perm[%d][%d][%d]" % (k,a,b)
                 
 # greater than zero
@@ -343,36 +267,18 @@ for k in range(permutation_count):
         m += (v[timestamps-1][k][a] >= 1), "v_goal_positive[%d][%d]" % (k,a)
                 
                 
-# heuristics (noop-prevention)
-# m += c_cmp[0][0][1] == 1
-                
 # no two cmp in a row
 for i in range(timestamps-1):
     cmps = xsum([c_cmp[i][a][b] for a in c_cmp[i] for b in c_cmp[i][a]])
     cmps_next = xsum([c_cmp[i+1][a][b] for a in c_cmp[i+1] for b in c_cmp[i+1][a]])
     m += (cmps + cmps_next <= 1), "no_two_cmp_in_a_row[%d]" % i
                 
-# no noop in general (+use flags)
-                
-                
-# print intermediate solutions
-
-# alibi objective to guide and have a ranking
-# cmp_sum = xsum([c_cmp[i][a][b] for i in range(timestamps) for a in c_cmp[i] for b in c_cmp[i][a]])
-# m.objective = minimize(cmp_sum)
-# m.objective = maximize(cmp_sum)
 
 # at most one solution
 m.max_solutions = 1
 m.optimize(max_solutions=1)
                 
                 
-# call with
-# python sort_linear.py | tee sort_linear_$(date +%Y-%m-%d_%H-%M-%S).txt
-                
-                
-                
-    
 def is_set(x: Var):
     return x.x >= 0.5
     
@@ -402,13 +308,10 @@ def printSol():
                     if not r_is_lt and not r_is_gt:
                         cmp_str = "="
                     cmp_str = " " + cmp_str + " "
-                    # cmp_str = ", "
                 print(val(r_v), end=cmp_str)
             print("  " + flag_str)
 
         command = ""
-        # if c_noop[i].X >= 0.5:
-        #     command+="noop"
         for a in c_cmp[i]:
             for b in c_cmp[i][a]:
                 if is_set(c_cmp[i][a][b]):

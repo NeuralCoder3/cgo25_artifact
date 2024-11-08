@@ -204,8 +204,6 @@
 (check-sat)
 ; (get-model)
 ; print the model readably as INSTR A B
-; (get-value (inst_1 a_1 b_1 inst_2 a_2 b_2 inst_3 a_3 b_3 inst_4 a_4 b_4)
-; (get-value (init123))
 (get-value (inst_1 a_1 b_1))
 (get-value (inst_2 a_2 b_2))
 (get-value (inst_3 a_3 b_3))
