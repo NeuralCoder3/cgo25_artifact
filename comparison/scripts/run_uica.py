@@ -16,7 +16,7 @@ if len(sys.argv) > 2:
     postfix = sys.argv[2]
     
 asm_folder = f"times/uica_asm{postfix}"
-uicaPath = "./scripts/uiCA/uiCA.py"
+uicaPath = "./scripts/uiCA2/uiCA.py"
 tmp_folder = "times/tmp"
 uica_output = f"times/uica_output{postfix}"
     
