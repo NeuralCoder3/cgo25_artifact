@@ -30,7 +30,7 @@ Our sorting kernels are faster than the reference implementations.
 
 ## Availability of the artifact
 
-The CGO artifact is available at Zenodo ([10.5281/zenodo.14055237](https://zenodo.org/records/14055237)). 
+The CGO artifact is available at Zenodo ([10.5281/zenodo.14092980](https://zenodo.org/records/14092980)). 
 Additionally, the files are available online in [this Github repository](https://github.com/NeuralCoder3/cgo25_artifact).
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14055237.svg)](https://doi.org/10.5281/zenodo.14055237)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14092980.svg)](https://doi.org/10.5281/zenodo.14092980)
