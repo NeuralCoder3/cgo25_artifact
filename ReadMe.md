@@ -10,7 +10,7 @@ to ease the execution.
 ### Synthesis
 
 For synthesis, we provide
-- `cp` Constraint Programming, Section 4.2, results in `cp/refined`
+- `cp` Constraint Programming, Section 4.2
 - `enum` Enumerative Synthesis, Section 3
 - `planning` Planning Formalisms, Section 5.2
 - `smt` Satisfiability Modulo Theory (CEGIS and direct formulations), Section 4.1
