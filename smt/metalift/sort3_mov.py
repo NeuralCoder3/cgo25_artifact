@@ -1,8 +1,6 @@
 import sys
 sys.path.append('/app/metalift')
 
-# Note that this is the swap if greater variant to show the general runtime of metalift
-
 from metalift.ir import *
 from metalift.analysis_new import VariableTracker, analyze
 
@@ -19,19 +17,36 @@ def targetLang():
   le = TupleGet(state, IntLit(2))
   ge = TupleGet(state, IntLit(3))
   
-  swap12Gt = FnDecl("swap12Gt",
+  instructions = []
+  for a in range(4):
+    for b in range(a+1,4):
+      ra = [x,y,z,swap][a]
+      rb = [x,y,z,swap][b]
+      cmp = FnDecl(f"cmp_r{a}_r{b}",
                 StateType(),
-               Ite(Gt(x, y), Tuple(Tuple(y, x, z), swap, le, ge), state),
-                state)
-  swap13Gt = FnDecl("swap13Gt",
+               Tuple(Tuple(x, y, z), swap, Lt(ra, rb), Gt(ra, rb)),
+               state)
+      instructions.append(cmp)
+      s = [x,y,z,swap]
+      s[a], s[b] = s[b], s[a]
+      sx,sy,sz,sswap = s
+      mov = FnDecl(f"mov_r{a}_r{b}",
                 StateType(),
-                 Ite(Gt(x, z), Tuple(Tuple(z, y, x), swap, le, ge), state),
-                 state)
-  swap23Gt = FnDecl("swap23Gt",
+                Tuple(Tuple(sx, sy, sz), sswap, le, ge),
+               state)
+      instructions.append(mov)
+      cmov_gt = FnDecl(f"cmov_gt_r{a}_r{b}",
                 StateType(),
-                 Ite(Gt(y, z), Tuple(Tuple(x, z, y), swap, le, ge), state),
-                 state)
-  return [swap12Gt, swap13Gt, swap23Gt]
+                Ite(ge, Tuple(Tuple(sx, sy, sz), sswap, le, ge), state),
+               state)
+      instructions.append(cmov_gt)
+      cmov_lt = FnDecl(f"cmov_lt_r{a}_r{b}",
+                StateType(),
+                Ite(le, Tuple(Tuple(sx, sy, sz), sswap, le, ge), state),
+               state)
+      instructions.append(cmov_lt)
+      
+  return instructions
 
 x = Var("x", Int())
 y = Var("y", Int())
@@ -61,7 +76,7 @@ for f in lang:
 
 grammar = init
 
-for i in range(5):
+for i in range(12):
   calls = [
     Call(f.name(), StateType(), grammar) for f in lang
   ]
