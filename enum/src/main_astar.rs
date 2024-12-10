@@ -308,7 +308,7 @@ fn main() {
             // non-greedy (preservative) check if there is a significant cut possible
             #[cfg(feature = "heuristic2")]
             {
-                if min_perm_count[length as usize]*2 < new_perm_count {
+                if min_perm_count[new_length_u]*2 < new_perm_count {
                     cut += 1;
                     continue;
                 }
@@ -316,7 +316,7 @@ fn main() {
 
             #[cfg(feature = "heuristic15")]
             {
-                if min_perm_count[length as usize]*3/2 < new_perm_count {
+                if min_perm_count[new_length_u]*3/2 < new_perm_count {
                     cut += 1;
                     continue;
                 }
@@ -324,7 +324,7 @@ fn main() {
 
             #[cfg(feature = "heuristic1")]
             {
-                if min_perm_count[length as usize] < new_perm_count {
+                if min_perm_count[new_length_u] < new_perm_count {
                     cut += 1;
                     continue;
                 }
